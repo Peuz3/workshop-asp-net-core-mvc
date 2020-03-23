@@ -39,6 +39,12 @@ namespace SalesWebMvc.Controllers
         [ValidateAntiForgeryToken]
         public IActionResult Create(Seller seller)
         {
+            if (!ModelState.IsValid)
+            {
+                var departamens = _departamentService.FindAll();
+                var viewModel = new SellerFormViewModel { Seller = seller, Departaments = departamens };
+                return View(viewModel);
+            }
             _sellerService.Insert(seller);
             return RedirectToAction(nameof(Index));
         }
@@ -104,6 +110,13 @@ namespace SalesWebMvc.Controllers
         [ValidateAntiForgeryToken]
         public IActionResult Edit(int id, Seller seller)
         {
+            if (!ModelState.IsValid)
+            {
+                var departamens = _departamentService.FindAll();
+                var viewModel = new SellerFormViewModel { Seller = seller, Departaments = departamens };
+                return View(viewModel);
+            }
+
             if (id != seller.Id)
             {
                 return RedirectToAction(nameof(Error), new { message = "Id mismatch" }); ;
@@ -120,13 +133,13 @@ namespace SalesWebMvc.Controllers
             }
             catch (DbConcurrencyException e)
             {
-                return RedirectToAction(nameof(Error), new { message = e.Message }); 
+                return RedirectToAction(nameof(Error), new { message = e.Message });
             }
 
         }
 
 
-        public IActionResult Error (string message)
+        public IActionResult Error(string message)
         {
             var viewModel = new ErrorViewModel
             {
@@ -137,6 +150,6 @@ namespace SalesWebMvc.Controllers
             return View(viewModel);
         }
 
-        
-}
+
+    }
 }
